@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:movie/components/api.dart';
 import 'package:sizer/sizer.dart';
+import 'components/components.dart';
 import 'layout/homeScreen.dart';
 
 void main() {
@@ -9,11 +11,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return Sizer(
-        builder: (context, orientation, deviceType) => MaterialApp(
+        builder: (context, orientation, deviceType) => const MaterialApp(
               title: 'Movie',
               home: HomeScreen(),
             ));
