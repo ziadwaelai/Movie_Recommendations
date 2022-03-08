@@ -1,6 +1,6 @@
 import 'package:http/http.dart';
 import 'dart:convert';
-
+import 'package:connectivity/connectivity.dart';
 import 'package:movie/components/components.dart';
 
 Future<String> getRandomMovie() async {
@@ -12,6 +12,7 @@ Future<String> getRandomMovie() async {
 
 Future getMovie(String name) async {
   if (decodedMap.isNotEmpty) {
+    print("object");
     return decodedMap;
   }
   var response = await get(
@@ -20,15 +21,27 @@ Future getMovie(String name) async {
   return data;
 }
 
-Future<void> getMovieList() async {
-  getPref();
-  if (decodedMap.isNotEmpty) {
-    movieData = decodedMap;
+Future getMovieList() async {
+  var connectivityResult = await (Connectivity().checkConnectivity());
+  if ((connectivityResult == ConnectivityResult.wifi ||
+      connectivityResult == ConnectivityResult.mobile)) {
+    print("connected");
+    getPref();
+    if (decodedMap.isNotEmpty) {
+      movieData = decodedMap;
+      return movieData;
+    } else {
+      await getRandomMovie()
+          .then((e) async => await getMovie(e).then((value) async {
+                movieData = value;
+                await savePref(value);
+              }));
+      return movieData;
+    }
   } else {
-    await getRandomMovie()
-        .then((e) async => await getMovie(e).then((value) async {
-              movieData = value;
-              await savePref(value);
-            }));
+    print("disconnected");
+    await getPref();
+    movieData = decodedMap;
+    return movieData;
   }
 }

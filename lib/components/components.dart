@@ -12,10 +12,19 @@ savePref(Map<String, dynamic> map) async {
   preferences.setString("data", encodeMap);
 }
 
-void getPref() async {
+getPref() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   var map = preferences.getString("data");
+  if (map == null) {
+    await getRandomMovie()
+        .then((e)  =>  getMovie(e).then((value)  {
+              movieData = value;
+               savePref(value);
+            }));
+  }
   decodedMap = await json.decode(map!);
+
+  return decodedMap;
 }
 
 void cleaPref() async {
@@ -24,5 +33,4 @@ void cleaPref() async {
   SharedPreferences preferences = await SharedPreferences.getInstance();
   await preferences.clear();
   getMovieList();
-  print(movieData);
 }
